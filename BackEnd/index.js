@@ -45,13 +45,19 @@ import { Server } from "socket.io";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
 // initialize socket.io
 
 const server = http.createServer(app);
 
-export const io = new Server(server, { cors: { origin: "*" } });
+export const io = new Server(server, {
+  cors: {
+    origin: FRONTEND_URL,
+  }
+});
+
 
 // store online users
 
@@ -92,7 +98,13 @@ io.on("connection",(socket) => {
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
-app.use(cors());
+
+app.use(cors({
+  origin: FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"], // ✅ if using headers
+}));
+
 
 // DB connection
 await connectDB();
