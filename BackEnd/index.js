@@ -135,102 +135,96 @@
 
 
 
-// // import express from "express";
-// // import "dotenv/config";
-// // import cors from "cors";
-// // import http from "http";
-// // import { connectDB } from "./config/DB.js";
-// // import userRouter from "./routes/userRoute.js";
-// // import messageRouter from "./routes/messageRoute.js";
-// // import { Server } from "socket.io";
+// import express from "express";
+// import "dotenv/config";
+// import cors from "cors";
+// import http from "http";
+// import { connectDB } from "./config/DB.js";
+// import userRouter from "./routes/userRoute.js";
+// import messageRouter from "./routes/messageRoute.js";
+// import { Server } from "socket.io";
 
-// // const app = express();
-// // const PORT = process.env.PORT || 4000;
+// const app = express();
+// const PORT = process.env.PORT || 4000;
 
-// // // Initialize HTTP server and Socket.IO
-// // const server = http.createServer(app);
+// // Initialize socket.io
+// const server = http.createServer(app);
 
+// export const io = new Server(server, {
+//   cors: {
+//     origin: [
+//       process.env.FRONTEND_URL,
+//       "https://baatcheet-two.vercel.app",
+//       "http://localhost:5173"
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE"]
+//   }
+// });
 
-// // // Socket.IO setup
-// // export const io = new Server(server, {
-// //   cors: {
-// //     origin: process.env.FRONTEND_URL,
-// //   }
-// // });
+// // Store online users
+// export const userSocketMap = {}; // {userId : socketId}
 
-// // // Online users tracking
-// // export const userSocketMap = {};
-
-// // // Socket.IO connection handler
-// // io.on("connection", (socket) => {
-// //   const userId = socket.handshake.query.userId;
-// //   console.log("User connected:", userId);
+// // Socket connection handler
+// io.on("connection", (socket) => {
+//   const userId = socket.handshake.query.userId;
+//   console.log("User connected: " + userId);
   
-// //   if (userId) {
-// //     userSocketMap[userId] = socket.id;
-// //   }
+//   if (userId && userId !== "undefined") {
+//     userSocketMap[userId] = socket.id;
+//   }
   
-// //   io.emit('getOnlineUsers', Object.keys(userSocketMap));
+//   // Emit online users to all connected clients
+//   io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
-// //   socket.on('disconnect', () => {
-// //     console.log("User disconnected:", userId);
-// //     if (userId) {
-// //       delete userSocketMap[userId];
-// //     }
-// //     io.emit('getOnlineUsers', Object.keys(userSocketMap));
-// //   });
-// // });
+//   socket.on('disconnect', () => {
+//     console.log("User disconnected: " + userId);
+//     if (userId && userId !== "undefined") {
+//       delete userSocketMap[userId];
+//     }
+//     io.emit('getOnlineUsers', Object.keys(userSocketMap));
+//   });
+// });
 
-// // // Middlewares
-// // app.use(express.json({ limit: "10mb" }));
-// // app.use(express.urlencoded({ extended: false, limit: "10mb" }));
+// // Middlewares
+// app.use(express.json({ limit: "10mb" }));
+// app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
-// // // CORS configuration
+// // CORS configuration
+// const allowedOrigins = [
+//   process.env.FRONTEND_URL,
+//   "https://baatcheet-two.vercel.app",
+//   "http://localhost:5173"
+// ];
 
-// // const allowedOrigins = [
-// //   process.env.FRONTEND_URL, 
-// //   'http://localhost:5173'  
-// // ];
+// app.use(cors({
+//   origin: allowedOrigins,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'token', 'Authorization']
+// }));
 
-// // app.use(cors({
-// //   origin: allowedOrigins,
-// //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-// //   allowedHeaders: ['Content-Type', 'token']
-// // }));
+// app.options('*', cors());
 
-// // // Handle preflight requests
-// // app.options('*', cors());
+// // DB connection
+// await connectDB();
 
-// // // Database connection and server startup
-// // const startServer = async () => {
-// //   try {
-// //     await connectDB();
-// //     console.log("✅ Database connected successfully");
+// // Routes
+// app.use("/api/auth", userRouter);
+// app.use("/api/messages", messageRouter);
 
-// //     // API Routes
-// //     app.use("/api/auth", userRouter);
-// //     app.use("/api/messages", messageRouter);
+// // Health check endpoint
+// app.get("/", (req, res) => {
+//   res.send("🚀 Chat App API is working on Vercel!")
+// });
 
-// //     // Health check endpoint
-// //     app.get("/", (req, res) => {
-// //       res.send("🚀 Chat App API is running");
-// //     });
+// // For Development
+// if (process.env.NODE_ENV !== "production") {
+//   server.listen(PORT, () => {
+//     console.log(`⚡ Server is listening on PORT: ${PORT}`);
+//   });
+// }
 
-// //     // Start server
-// //     server.listen(PORT, () => {
-// //       console.log(`⚡ Server running on port ${PORT}`);
-// //     });
-// //   } catch (err) {
-// //     console.error("❌ Server startup failed:", err);
-// //     process.exit(1);
-// //   }
-// // };
-
-// // startServer();
-
-// // // Export for Vercel
-// // export default app;
-
+// // Export for Vercel
+// export default server;
 
 
 import express from "express";
@@ -245,9 +239,10 @@ import { Server } from "socket.io";
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Initialize socket.io
+// Create HTTP server
 const server = http.createServer(app);
 
+// Initialize Socket.IO
 export const io = new Server(server, {
   cors: {
     origin: [
@@ -259,27 +254,25 @@ export const io = new Server(server, {
   }
 });
 
-// Store online users
-export const userSocketMap = {}; // {userId : socketId}
+// Track online users
+export const userSocketMap = {}; // {userId: socketId}
 
-// Socket connection handler
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
-  console.log("User connected: " + userId);
-  
+  console.log("User connected:", userId);
+
   if (userId && userId !== "undefined") {
     userSocketMap[userId] = socket.id;
   }
-  
-  // Emit online users to all connected clients
-  io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
-  socket.on('disconnect', () => {
-    console.log("User disconnected: " + userId);
+  io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", userId);
     if (userId && userId !== "undefined") {
       delete userSocketMap[userId];
     }
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
 
@@ -287,7 +280,7 @@ io.on("connection", (socket) => {
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
-// CORS configuration
+// CORS
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "https://baatcheet-two.vercel.app",
@@ -296,11 +289,11 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'token', 'Authorization']
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "token", "Authorization"]
 }));
 
-app.options('*', cors());
+app.options("*", cors());
 
 // DB connection
 await connectDB();
@@ -309,17 +302,12 @@ await connectDB();
 app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 
-// Health check endpoint
+// Health check
 app.get("/", (req, res) => {
-  res.send("🚀 Chat App API is working on Vercel!")
+  res.send("🚀 Chat App API is working on Railway!");
 });
 
-// For Development
-if (process.env.NODE_ENV !== "production") {
-  server.listen(PORT, () => {
-    console.log(`⚡ Server is listening on PORT: ${PORT}`);
-  });
-}
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
-// Export for Vercel
-export default server;
