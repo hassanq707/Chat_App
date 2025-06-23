@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
   const [isSignup, setIsSignup] = useState(true);
   const [showBio, setShowBio] = useState(false);
+  const [loader, setLoader] = useState(false)
   const [agree, setAgree] = useState(false);
   const { login } = useContext(AuthContext);
 
@@ -37,33 +38,38 @@ const Login = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoader(true);
+
     if (isSignup && !showBio) {
       setShowBio(true);
+      setLoader(false);
     } else {
       const credentials = isSignup ? signupData : loginData;
       const state = isSignup ? "signup" : "login";
-      login(state, credentials);
+      await login(state, credentials);
+      setLoader(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#0d283b] to-[#0b1721] flex items-center justify-center z-50 p-4 overflow-hidden">
       <div className="w-full h-full md:h-auto md:max-w-4xl bg-[#0b2131] border border-[#1a3a52] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-y-auto md:overflow-hidden transform transition-all duration-300 hover:shadow-[0_10px_30px_-5px_rgba(42,122,199,0.3)]">
-        
+
         <div className="hidden md:flex md:w-1/2 flex-col items-center justify-center bg-gradient-to-br from-[#0d2f47] to-[#103b57] p-8 sm:p-12 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10" style={{
             backgroundImage: "radial-gradient(circle at 30% 50%, rgba(255,255,255,0.8) 0%, transparent 30%)"
           }}></div>
           <div className="relative z-10 flex flex-col items-center text-center">
-            <img 
-              src="/images/logo.png" 
-              className="w-28 h-28 mb-3 filter drop-shadow-lg" 
-              alt="Logo" 
+            <img
+              src="/images/logo.png"
+              className="w-28 h-28 mb-3 filter drop-shadow-lg"
+              alt="Logo"
             />
             <h1 className="text-4xl font-bold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-[#5dade2] to-[#aed6f1]">
-              Baat Cheet
+              BaatCheet
             </h1>
             <p className="text-white/80 mt-4 text-lg max-w-[90%] leading-relaxed">
               Premium messaging experience for VIP users
@@ -75,15 +81,15 @@ const Login = () => {
           <div className="absolute top-0 right-0 p-4">
             <div className="w-3 h-3 rounded-full bg-gradient-to-r from-[#2ecc71] to-[#3498db] animate-pulse"></div>
           </div>
-          
+
           <div className="flex justify-center mb-6 md:hidden">
-            <img 
-              src="/images/logo.png" 
-              className="w-20 h-20 filter drop-shadow-lg" 
-              alt="Logo" 
+            <img
+              src="/images/logo.png"
+              className="w-20 h-20 filter drop-shadow-lg"
+              alt="Logo"
             />
           </div>
-          
+
           <div className="mb-6">
             <h2 className="text-2xl sm:text-3xl font-bold text-white text-center md:text-left">
               {isSignup ? (showBio ? "Complete Your Profile" : "Join VIP Club") : "Exclusive Access"}
@@ -133,7 +139,7 @@ const Login = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="relative">
                     <i className="ri-mail-line absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#7f8c8d]"></i>
                     <input
@@ -146,7 +152,7 @@ const Login = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="relative">
                     <i className="ri-lock-2-line absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#7f8c8d]"></i>
                     <input
@@ -159,7 +165,7 @@ const Login = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="flex items-start gap-2 sm:gap-3">
                     <input
                       type="checkbox"
@@ -172,17 +178,23 @@ const Login = () => {
                       I agree to the <span className="text-[#3498db] cursor-pointer">VIP Terms</span> and <span className="text-[#3498db] cursor-pointer">Privacy Policy</span>
                     </label>
                   </div>
-                  
+
                   <button
                     type="submit"
                     disabled={!agree}
-                    className={`w-full py-3 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-base transition-all duration-200 ${agree
+                    className={`w-full py-3 sm:py-4 rounded-xl text-white font-bold text-sm sm:text-base transition-all duration-200 relative ${agree
                       ? "bg-gradient-to-r from-[#3498db] to-[#9b59b6] shadow-lg hover:shadow-[0_5px_15px_-5px_rgba(52,152,219,0.6)]"
                       : "bg-[#2c3e50] cursor-not-allowed"
-                    }`}
+                      }`}
                   >
+                    {loader && (
+                      <div className="absolute inset-0 rounded-xl bg-black/50 w-full h-full flex items-center justify-center">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
                     Become VIP Member
                   </button>
+
                 </>
               )
             ) : (
@@ -199,7 +211,7 @@ const Login = () => {
                     required
                   />
                 </div>
-                
+
                 <div className="relative">
                   <i className="ri-lock-2-line absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-[#7f8c8d]"></i>
                   <input
@@ -212,13 +224,21 @@ const Login = () => {
                     required
                   />
                 </div>
-                
-                <button
-                  type="submit"
-                  className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-r from-[#3498db] to-[#2ecc71] text-white font-bold text-sm sm:text-base shadow-lg hover:opacity-90 transition-all duration-200"
-                >
-                  Unlock VIP Access
-                </button>
+
+                <div className="relative ">
+                  <button
+                    type="submit"
+                    className="w-full py-3 sm:py-4 rounded-xl bg-gradient-to-r from-[#3498db] to-[#2ecc71] text-white font-bold text-sm sm:text-base shadow-lg hover:opacity-90 transition-all duration-200 relative"
+                  >
+                    {loader && (
+                      <div className="absolute inset-0 rounded-xl bg-black/50 w-full h-full flex items-center justify-center">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                    Unlock VIP Access
+                  </button>
+
+                </div>
               </>
             )}
           </form>
