@@ -121,17 +121,11 @@ const ChatContainer = ({ setIsMedia }) => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-full bg-[#0b2131]">
-                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
 
     return (
         <div className="flex flex-col h-full bg-[#0b2131]">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0d283b]">
+
+            <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0d283b]">
                 <div className="flex items-center gap-3 relative">
 
                     <i
@@ -157,7 +151,11 @@ const ChatContainer = ({ setIsMedia }) => {
                 </div>
             </div>
 
-            <div ref={messagesRef} className="flex-1 h-[calc(100vh-116px)] overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar">
+            <div
+                ref={messagesRef}
+                className="flex-1 overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar"
+                style={{ height: 'calc(100vh - 122px - 76px)' }} 
+            >
                 {messages.map((msg, idx) => (
                     <div
                         key={idx}
@@ -229,7 +227,7 @@ const ChatContainer = ({ setIsMedia }) => {
                 <div ref={bottomRef} />
             </div>
 
-            <div className="px-4 py-3 border-t border-white/10 bg-[#0d283b]">
+            <div className="sticky bottom-0 z-10 px-4 py-3 border-t border-white/10 bg-[#0d283b]">
                 {previewImage && (
                     <div className="mb-3 relative w-28 h-28 rounded overflow-hidden border border-white/20">
                         <img
