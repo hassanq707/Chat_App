@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 const EmojiPicker = lazy(() => import('emoji-picker-react'));
 
 const ChatContainer = ({ setIsMedia }) => {
-    const { messages, setSelectedUser, selectedUser, getSelectedUserMessages, sendMsgToSelectedUser, markMessageAsSeen } = useContext(ChatContext);
+    const { messages, clearMessages, setSelectedUser, selectedUser, getSelectedUserMessages, sendMsgToSelectedUser, markMessageAsSeen } = useContext(ChatContext);
     const { authUser, onlineUsers } = useContext(AuthContext);
 
     const [message, setMessage] = useState('');
@@ -24,6 +24,7 @@ const ChatContainer = ({ setIsMedia }) => {
         const fetchData = async () => {
             if (selectedUser) {
                 setLoading(true);
+                clearMessages();
                 await getSelectedUserMessages(selectedUser._id);
                 setLoading(false);
             }
@@ -121,14 +122,6 @@ const ChatContainer = ({ setIsMedia }) => {
         }
     };
 
-    // if (loading) {
-    //     return (
-    //         <div className="flex justify-center items-center h-full bg-[#0b2131]">
-    //             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div className="flex flex-col h-full bg-[#0b2131]">
 
@@ -158,79 +151,84 @@ const ChatContainer = ({ setIsMedia }) => {
                 </div>
             </div>
 
+{/* loading ? <div className="flex justify-center items-center h-full bg-[#0b2131]">
+                    <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                </div>
+                    :  */}
+
             <div
                 ref={messagesRef}
-                className="flex-1 overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar"
+                className="flex-1  overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar"
                 style={{ height: 'calc(100vh - 122px - 76px)' }}
             >
                 {messages.map((msg, idx) => (
-                    <div
-                        key={idx}
-                        className={`flex ${msg.senderId === authUser._id ? 'justify-end' : 'justify-start'} group`}
-                        data-message-id={msg._id}
-                        data-sender-id={msg.senderId}
-                        data-seen={msg.seen ? 'true' : 'false'}
-                    >
-                        <div className={`flex flex-col ${msg.senderId === authUser._id ? 'items-end' : 'items-start'}`}>
-                            <div
-                                className={`rounded-xl text-[15px] break-words whitespace-pre-wrap max-w-[80vw] md:max-w-[60vw] ${msg.image ? '' : 'inline-block'}
+                        <div
+                            key={idx}
+                            className={`flex ${msg.senderId === authUser._id ? 'justify-end' : 'justify-start'} group`}
+                            data-message-id={msg._id}
+                            data-sender-id={msg.senderId}
+                            data-seen={msg.seen ? 'true' : 'false'}
+                        >
+                            <div className={`flex flex-col ${msg.senderId === authUser._id ? 'items-end' : 'items-start'}`}>
+                                <div
+                                    className={`rounded-xl text-[15px] break-words whitespace-pre-wrap max-w-[80vw] md:max-w-[60vw] ${msg.image ? '' : 'inline-block'}
                   ${msg.senderId === authUser._id
-                                        ? 'bg-blue-600 text-white rounded-br-none'
-                                        : 'bg-[#18445f] text-white rounded-bl-none'}
+                                            ? 'bg-blue-600 text-white rounded-br-none'
+                                            : 'bg-[#18445f] text-white rounded-bl-none'}
                   ${msg.image ? 'p-1' : 'px-3 py-2'}`}
-                            >
-                                {msg.image ? (
-                                    <div className="relative w-full max-w-[220px] aspect-[4/3] rounded-lg overflow-hidden mx-auto">
-                                        <img
-                                            src={msg.image}
-                                            alt="sent"
-                                            className="w-full h-full object-cover rounded-lg"
-                                        />
+                                >
+                                    {msg.image ? (
+                                        <div className="relative w-full max-w-[220px] aspect-[4/3] rounded-lg overflow-hidden mx-auto">
+                                            <img
+                                                src={msg.image}
+                                                alt="sent"
+                                                className="w-full h-full object-cover rounded-lg"
+                                            />
+                                        </div>
+                                    ) : (
+                                        msg.text
+                                    )}
+                                </div>
+
+                                {msg.senderId === authUser._id && (
+                                    <div className="flex items-center gap-1.5 mt-0.5 h-4 relative">
+                                        <span className="absolute right-full mr-1 text-[11px] text-white/50 opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                                            {new Date(msg.createdAt).toLocaleDateString('en-GB')}
+                                        </span>
+                                        <span className="text-[11px] text-white/70 whitespace-nowrap">
+                                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </span>
+                                        <div className="flex justify-center items-center">
+                                            {msg.seen ? (
+                                                <i className="ri-check-double-fill text-[#2df3e6] text-[16px]" />
+                                            ) : onlineUsers.includes(selectedUser._id) ? (
+                                                <i className="ri-check-double-fill text-white/70 text-[16px]" />
+                                            ) : (
+                                                <i className="ri-check-line text-white/70 text-[16px]" />
+                                            )}
+                                        </div>
                                     </div>
-                                ) : (
-                                    msg.text
+                                )}
+
+                                {msg.senderId !== authUser._id && (
+                                    <div className="flex items-center gap-1 mt-0.5 h-4 relative">
+                                        <span className="text-[11px] text-white/70 whitespace-nowrap">
+                                            {new Date(msg.createdAt).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                            })}
+                                        </span>
+                                        <span className="text-[11px] text-white/50 opacity-0 group-hover:opacity-100 whitespace-nowrap ml-1">
+                                            {new Date(msg.createdAt).toLocaleDateString('en-GB')}
+                                        </span>
+                                    </div>
                                 )}
                             </div>
-
-                            {msg.senderId === authUser._id && (
-                                <div className="flex items-center gap-1.5 mt-0.5 h-4 relative">
-                                    <span className="absolute right-full mr-1 text-[11px] text-white/50 opacity-0 group-hover:opacity-100 whitespace-nowrap">
-                                        {new Date(msg.createdAt).toLocaleDateString('en-GB')}
-                                    </span>
-                                    <span className="text-[11px] text-white/70 whitespace-nowrap">
-                                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </span>
-                                    <div className="flex justify-center items-center">
-                                        {msg.seen ? (
-                                            <i className="ri-check-double-fill text-[#2df3e6] text-[16px]" />
-                                        ) : onlineUsers.includes(selectedUser._id) ? (
-                                            <i className="ri-check-double-fill text-white/70 text-[16px]" />
-                                        ) : (
-                                            <i className="ri-check-line text-white/70 text-[16px]" />
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {msg.senderId !== authUser._id && (
-                                <div className="flex items-center gap-1 mt-0.5 h-4 relative">
-                                    <span className="text-[11px] text-white/70 whitespace-nowrap">
-                                        {new Date(msg.createdAt).toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                        })}
-                                    </span>
-                                    <span className="text-[11px] text-white/50 opacity-0 group-hover:opacity-100 whitespace-nowrap ml-1">
-                                        {new Date(msg.createdAt).toLocaleDateString('en-GB')}
-                                    </span>
-                                </div>
-                            )}
                         </div>
-                    </div>
-                ))}
+                    ))}
                 <div ref={bottomRef} />
             </div>
 

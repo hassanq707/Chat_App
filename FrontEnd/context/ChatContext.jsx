@@ -82,10 +82,10 @@ export const ChatProvider = ({ children }) => {
 
         // Listen for message seen updates (NEW EVENT)
         socket.on("messageSeen", (updatedMessage) => {
-            setMessages((prev) => 
-                prev.map(msg => 
-                    msg._id === updatedMessage._id 
-                        ? { ...msg, seen: true } 
+            setMessages((prev) =>
+                prev.map(msg =>
+                    msg._id === updatedMessage._id
+                        ? { ...msg, seen: true }
                         : msg
                 )
             );
@@ -104,6 +104,10 @@ export const ChatProvider = ({ children }) => {
         return () => unSubscribeMessages()
     }, [socket, selectedUser])
 
+    const clearMessages = () => {
+        setMessages([]);
+    };
+
     const value = {
         messages,
         users,
@@ -114,7 +118,8 @@ export const ChatProvider = ({ children }) => {
         unseenMessages,
         setUnseenMessages,
         getSelectedUserMessages,
-        markMessageAsSeen, 
+        markMessageAsSeen,
+        clearMessages
     }
 
     return (
