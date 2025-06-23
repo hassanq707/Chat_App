@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }) => {
    const connectSocket = (userData) => {
       if (!userData || socket?.connected) return
       const newSocket = io(url, {
+         transports :["websocket"], 
          query: { userId: userData._id }
       })
       setSocket(newSocket)
@@ -123,3 +124,5 @@ export const AuthProvider = ({ children }) => {
       </AuthContext.Provider>
    )
 }
+
+
