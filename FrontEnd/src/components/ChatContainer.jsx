@@ -121,13 +121,13 @@ const ChatContainer = ({ setIsMedia }) => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-full bg-[#0b2131]">
-                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div className="flex justify-center items-center h-full bg-[#0b2131]">
+    //             <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="flex flex-col h-full bg-[#0b2131]">
@@ -258,7 +258,7 @@ const ChatContainer = ({ setIsMedia }) => {
                     </div>
                 )}
 
-                <div className="flex items-center gap-3 sm:gap-3 relative  sm:px-2">
+                <div className="flex items-center gap-3 sm:gap-3 relative sm:px-2">
 
                     <label className="text-white/70 hover:text-white cursor-pointer flex-shrink-0">
                         <i className="ri-image-add-line text-2xl sm:text-3xl"></i>
@@ -309,7 +309,7 @@ const ChatContainer = ({ setIsMedia }) => {
                     <button
                         onClick={previewImage ? handleSendPreviewImage : sendMessage}
                         disabled={previewImage ? false : !message.trim()}
-                        className={`p-1 sm:p-2 rounded-full flex-shrink-0 transition ${previewImage || message.trim()
+                        className={`rounded-full flex-shrink-0 transition ${previewImage || message.trim()
                             ? 'text-blue-500 hover:text-blue-400'
                             : 'text-gray-500'
                             }`}
