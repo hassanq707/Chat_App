@@ -45,7 +45,6 @@ import { Server } from "socket.io";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const FRONTEND_URL = process.env.FRONTEND_URL;
 
 
 // initialize socket.io
@@ -99,10 +98,15 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: false, limit: "10mb" }));
 
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL, 
+  'http://localhost:5173'  
+];
+
 app.use(cors({
-  origin: FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"], // ✅ if using headers
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'token']
 }));
 
 
