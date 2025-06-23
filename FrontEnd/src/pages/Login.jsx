@@ -174,7 +174,7 @@ const Login = () => {
                       onChange={() => setAgree(!agree)}
                       className="mt-1 accent-[#3498db]"
                     />
-                    <label htmlFor="terms" className="text-xs sm:text-sm text-[#bdc3c7]">
+                    <label htmlFor="terms" className="mt-[1px] sm:mt-0 text-xs sm:text-sm text-[#bdc3c7]">
                       I agree to the <span className="text-[#3498db] cursor-pointer">VIP Terms</span> and <span className="text-[#3498db] cursor-pointer">Privacy Policy</span>
                     </label>
                   </div>
