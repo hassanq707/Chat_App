@@ -121,6 +121,13 @@ const ChatContainer = ({ setIsMedia }) => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-full bg-[#0b2131]">
+                <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full bg-[#0b2131]">
@@ -154,7 +161,7 @@ const ChatContainer = ({ setIsMedia }) => {
             <div
                 ref={messagesRef}
                 className="flex-1 overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar"
-                style={{ height: 'calc(100vh - 122px - 76px)' }} 
+                style={{ height: 'calc(100vh - 122px - 76px)' }}
             >
                 {messages.map((msg, idx) => (
                     <div
