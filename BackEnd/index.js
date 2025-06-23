@@ -109,6 +109,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'token']
 }));
 
+app.options('*', cors());
 
 // DB connection
 await connectDB();
@@ -122,11 +123,11 @@ app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-// development
+// For Development
 if(process.env.NODE_ENV !== "production"){
   server.listen(PORT, () => {
     console.log("Server is listening on PORT:", PORT);
   });
 }
-//for vercel
-export default server
+// For Vercel
+export default server;
