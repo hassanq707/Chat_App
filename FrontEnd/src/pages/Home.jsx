@@ -11,7 +11,6 @@ const Home = () => {
     <div className="flex h-screen md:items-center md:justify-center md:min-h-[80vh] md:py-16">
       <div className="relative flex w-full h-full md:w-[85%] md:min-h-[80vh] bg-[#0d283b] md:shadow-3xl md:rounded-2xl overflow-hidden">
 
-        {/* Mobile View - Slide Logic */}
         <div
           className={`absolute inset-0 transition-transform duration-500 ease-in-out md:static md:translate-x-0 
         ${selectedUser ? '-translate-x-full' : 'translate-x-0'} 

@@ -6,18 +6,26 @@ import { ChatContext } from '../../context/ChatContext';
 const SideBar = ({ setIsMedia }) => {
   const [input, setInput] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const { logout, authUser, onlineUsers } = useContext(AuthContext);
-  const { getUsers, users,clearMessages, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext);
+  const { getUsers, users, clearMessages, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoadingUsers(true);
+      await getUsers();
+      setIsLoadingUsers(false);
+    };
+    fetchUsers();
+  }, [onlineUsers]);
+
 
   const filteredUsers = input ? users.filter((user) => (
     user.fullname.toLowerCase().includes(input.toLowerCase())
   )) : users;
 
-  useEffect(() => {
-    getUsers();
-  }, [onlineUsers]);
 
   return (
     <div className="flex flex-col h-full w-full text-white bg-[#0d283b]">
@@ -81,51 +89,58 @@ const SideBar = ({ setIsMedia }) => {
       </div>
 
       <div className="overflow-y-auto px-2 space-y-3 pb-4 h-[calc(100vh-112px)] custom-scrollbar">
-        {filteredUsers.map((user, index) => (
-          <div
-            key={user._id}
-            className={`flex items-center justify-between hover:bg-[#13344c] p-2 rounded cursor-pointer transition 
-            ${selectedUser?._id === user._id ? "bg-[#13344c]" : ""}
-            `}
-            onClick={() => {
-              if (selectedUser?._id === user._id) {
-                setSelectedUser(null);
-                clearMessages(); 
-              } else {
-                setUnseenMessages((prev) => ({
-                  ...prev,
-                  [user._id]: 0
-                }));
-                clearMessages(); 
-                setSelectedUser(user);
-                setIsMedia(false);
-              }
-            }}
-          >
-            <div className="flex items-center space-x-3">
-              <img
-                src={user.profilePic || "/images/default.png"}
-                alt={user.fullname}
-                className="w-12 h-12 rounded-full object-cover"
-              />
-              <div>
-                <p className="font-medium text-md">{user.fullname}</p>
-                {
-                  onlineUsers.includes(user._id)
-                    ? <p className="text-sm font-semibold text-[#20bd30]">Online</p>
-                    : <p className="text-sm text-white/50">Offline</p>
-                }
-              </div>
-            </div>
-
-            {unseenMessages[user._id] > 0 && (
-              <div className="bg-[#2e5e87] text-sm px-2 py-1 rounded-full text-white font-semibold min-w-7 text-center">
-                {unseenMessages[user._id]}
-              </div>
-            )}
+        {isLoadingUsers ? (
+          <div className="flex justify-center items-center h-full">
+            <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
-        ))}
+        ) : (
+          filteredUsers.map((user) => (
+            <div
+              key={user._id}
+              className={`flex items-center justify-between hover:bg-[#13344c] p-2 rounded cursor-pointer transition 
+        ${selectedUser?._id === user._id ? "bg-[#13344c]" : ""}
+        `}
+              onClick={() => {
+                if (selectedUser?._id === user._id) {
+                  setSelectedUser(null);
+                  clearMessages();
+                } else {
+                  setUnseenMessages((prev) => ({
+                    ...prev,
+                    [user._id]: 0
+                  }));
+                  clearMessages();
+                  setSelectedUser(user);
+                  setIsMedia(false);
+                }
+              }}
+            >
+              <div className="flex items-center space-x-3">
+                <img
+                  src={user.profilePic || "/images/default.png"}
+                  alt={user.fullname}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <p className="font-medium text-md">{user.fullname}</p>
+                  {
+                    onlineUsers.includes(user._id)
+                      ? <p className="text-sm font-semibold text-[#20bd30]">Online</p>
+                      : <p className="text-sm text-white/50">Offline</p>
+                  }
+                </div>
+              </div>
+
+              {unseenMessages[user._id] > 0 && (
+                <div className="bg-[#2e5e87] text-sm px-2 py-1 rounded-full text-white font-semibold min-w-7 text-center">
+                  {unseenMessages[user._id]}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
+
     </div>
   );
 };
