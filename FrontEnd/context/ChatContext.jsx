@@ -38,17 +38,41 @@ export const ChatProvider = ({ children }) => {
     }
 
     const sendMsgToSelectedUser = async (messageData) => {
+
+        const tempId = `temp-${Date.now()}`;
+
+        const optimisticMessage = {
+            _id: tempId,
+            senderId: authUser._id,
+            receiverId: selectedUser._id,
+            text: messageData.text || "",
+            image: messageData.image || "",
+            seen: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+        };
+
+        setMessages(prev => [...prev, optimisticMessage]);
+
         try {
             const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
             if (data.success) {
-                setMessages((prev) => [...prev, data.newMessage]);
+                // Change temp with real after getting response
+                setMessages(prev =>
+                    prev.map(msg =>
+                        msg._id === tempId ? data.newMessage : msg
+                    )
+                );
             } else {
-                toast.error(data.message);
+                throw new Error(data.message);
             }
         } catch (error) {
+            // Rollback UI on error
+            setMessages(prev => prev.filter(msg => msg._id !== tempId));
             toast.error("Message send failed");
         }
     };
+
 
     // Function to mark message as seen and emit to sender
     const markMessageAsSeen = async (messageId) => {
