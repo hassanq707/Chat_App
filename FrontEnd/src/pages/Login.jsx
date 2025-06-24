@@ -166,15 +166,15 @@ const Login = () => {
                     />
                   </div>
 
-                  <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <input
                       type="checkbox"
                       id="terms"
                       checked={agree}
                       onChange={() => setAgree(!agree)}
-                      className="mt-1 accent-[#3498db]"
+                      className="mt-[1px] accent-[#3498db]"
                     />
-                    <label htmlFor="terms" className="mt-[1px] sm:mt-0 text-xs sm:text-sm text-[#bdc3c7]">
+                    <label htmlFor="terms" className=" text-xs sm:text-sm text-[#bdc3c7]">
                       I agree to the <span className="text-[#3498db] cursor-pointer">VIP Terms</span> and <span className="text-[#3498db] cursor-pointer">Privacy Policy</span>
                     </label>
                   </div>

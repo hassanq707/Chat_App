@@ -24,7 +24,6 @@ const ChatContainer = ({ setIsMedia }) => {
         const fetchData = async () => {
             if (selectedUser) {
                 setLoading(true);
-                clearMessages();
                 await getSelectedUserMessages(selectedUser._id);
                 setLoading(false);
             }
@@ -130,7 +129,10 @@ const ChatContainer = ({ setIsMedia }) => {
 
                     <i
                         className="ri-arrow-left-line text-2xl text-white/70 hover:text-white cursor-pointer md:hidden"
-                        onClick={() => setSelectedUser(null)}
+                        onClick={() => {
+                            setSelectedUser(null)
+                            clearMessages();
+                        }}
                     ></i>
 
                     <div className="relative">

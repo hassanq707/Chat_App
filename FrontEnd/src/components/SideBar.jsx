@@ -8,7 +8,7 @@ const SideBar = ({ setIsMedia }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const { logout, authUser, onlineUsers } = useContext(AuthContext);
-  const { getUsers, users, clearMessages, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext);
+  const { getUsers, users, selectedUser, setSelectedUser, unseenMessages, setUnseenMessages } = useContext(ChatContext);
 
   const navigate = useNavigate();
 
@@ -103,13 +103,13 @@ const SideBar = ({ setIsMedia }) => {
               onClick={() => {
                 if (selectedUser?._id === user._id) {
                   setSelectedUser(null);
-                  clearMessages();
+                
                 } else {
                   setUnseenMessages((prev) => ({
                     ...prev,
                     [user._id]: 0
                   }));
-                  clearMessages();
+                
                   setSelectedUser(user);
                   setIsMedia(false);
                 }
