@@ -94,23 +94,7 @@ const ChatContainer = ({ setIsMedia }) => {
         sendMsgToSelectedUser({ text: msgToSend });
     };
 
-    useEffect(() => {
-        const input = inputRef.current;
-
-        const keepFocus = () => {
-            setTimeout(() => {
-                input?.focus();
-            }, 100);
-        };
-
-        input?.addEventListener("blur", keepFocus);
-
-        return () => {
-            input?.removeEventListener("blur", keepFocus);
-        };
-    }, []);
-
-
+    
     const handleSendImage = (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith("image/")) {
