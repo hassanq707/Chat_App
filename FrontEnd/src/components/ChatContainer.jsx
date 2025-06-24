@@ -89,6 +89,7 @@ const ChatContainer = ({ setIsMedia }) => {
             await sendMsgToSelectedUser({ text: message });
             setMessage('');
             setShowEmoji(false);
+            inputRef.current?.focus();
         }
     };
 
