@@ -84,14 +84,32 @@ const ChatContainer = ({ setIsMedia }) => {
         };
     }, [messages, selectedUser]);
 
-    const sendMessage = async () => {
-        if (message.trim()) {
-            await sendMsgToSelectedUser({ text: message });
-            setMessage('');
-            setShowEmoji(false);
-            inputRef.current?.focus();
-        }
+    const sendMessage = () => {
+        if (!message.trim()) return;
+
+        const msgToSend = message;
+        setMessage('');
+        setShowEmoji(false);
+        inputRef.current?.focus();
+        sendMsgToSelectedUser({ text: msgToSend });
     };
+
+    useEffect(() => {
+        const input = inputRef.current;
+
+        const keepFocus = () => {
+            setTimeout(() => {
+                input?.focus();
+            }, 100);
+        };
+
+        input?.addEventListener("blur", keepFocus);
+
+        return () => {
+            input?.removeEventListener("blur", keepFocus);
+        };
+    }, []);
+
 
     const handleSendImage = (e) => {
         const file = e.target.files[0];
