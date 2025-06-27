@@ -422,7 +422,6 @@ const ChatContainer = ({ setIsMedia }) => {
         sendMsgToSelectedUser({ text: msgToSend });
     };
 
-
     const handleSendImage = (e) => {
         const file = e.target.files[0];
         if (!file || !file.type.startsWith("image/")) {
@@ -453,10 +452,10 @@ const ChatContainer = ({ setIsMedia }) => {
     };
 
     return (
-<div className="flex flex-col h-screen bg-[#0b2131]">
-
-<div className="sticky top-0 z-10 h-16 flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0b2131]">                <div className="flex items-center gap-3 relative">
-
+        <div className="flex flex-col h-full bg-[#0b2131] relative">
+            {/* Header - Fixed on mobile, normal on desktop */}
+            <div className="fixed top-0 left-0 right-0 z-50 md:sticky md:top-0 md:z-10 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-[#0d283b]">
+                <div className="flex items-center gap-3 relative">
                     <i
                         className="ri-arrow-left-line text-2xl text-white/70 hover:text-white cursor-pointer md:hidden"
                         onClick={() => {
@@ -483,14 +482,18 @@ const ChatContainer = ({ setIsMedia }) => {
                 </div>
             </div>
 
+            {/* Messages Container - Scrollable with proper padding */}
             <div
                 ref={messagesRef}
-                className="flex-1 overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar"
+                className="flex-1 overflow-y-auto px-4 py-3 space-y-2 custom-scrollbar pt-[76px] pb-[88px] md:pt-3 md:pb-3 h-[calc(100vh-164px)] md:h-[calc(100vh-198px)]"
+                style={{ minHeight: '0' }}
             >
-                {loading ? <div className="flex justify-center items-center h-full bg-[#0b2131]">
-                    <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-                    : messages.map((msg, idx) => (
+                {loading ? (
+                    <div className="flex justify-center items-center h-full bg-[#0b2131]">
+                        <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    messages.map((msg, idx) => (
                         <div
                             key={idx}
                             className={`flex ${msg.senderId === authUser._id ? 'justify-end' : 'justify-start'} group`}
@@ -501,10 +504,10 @@ const ChatContainer = ({ setIsMedia }) => {
                             <div className={`flex flex-col ${msg.senderId === authUser._id ? 'items-end' : 'items-start'}`}>
                                 <div
                                     className={`rounded-xl text-[15px] break-words whitespace-pre-wrap max-w-[80vw] md:max-w-[60vw] ${msg.image ? '' : 'inline-block'}
-                  ${msg.senderId === authUser._id
+                                        ${msg.senderId === authUser._id
                                             ? 'bg-blue-600 text-white rounded-br-none'
                                             : 'bg-[#18445f] text-white rounded-bl-none'}
-                  ${msg.image ? 'p-1' : 'px-3 py-2'}`}
+                                        ${msg.image ? 'p-1' : 'px-3 py-2'}`}
                                 >
                                     {msg.image ? (
                                         <div className="relative w-full max-w-[220px] aspect-[4/3] rounded-lg overflow-hidden mx-auto">
@@ -557,35 +560,37 @@ const ChatContainer = ({ setIsMedia }) => {
                                 )}
                             </div>
                         </div>
-                    ))}
+                    ))
+                )}
                 <div ref={bottomRef} />
             </div>
 
-            <div className="sticky bottom-0 z-10 h-20 flex-shrink-0 px-4 py-3 border-t border-white/10 bg-[#0b2131]">                {previewImage && (
-                <div className="mb-3 relative w-28 h-28 rounded overflow-hidden border border-white/20">
-                    <img
-                        src={previewImage}
-                        alt="preview"
-                        className="w-full h-full object-cover rounded opacity-100"
-                    />
-                    {imageUploading && (
-                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        </div>
-                    )}
-                    <button
-                        onClick={() => !imageUploading && setPreviewImage(null)}
-                        className="absolute top-1 right-1 z-10 flex items-center justify-center w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-400"
-                        aria-label="Close image"
-                        disabled={imageUploading}
-                    >
-                        <i className="ri-close-line text-sm" />
-                    </button>
-                </div>
-            )}
+            {/* Input Area - Fixed on mobile, normal on desktop */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 md:sticky md:bottom-0 md:z-10 px-4 py-3 border-t border-white/10 bg-[#0d283b]">
+                {previewImage && (
+                    <div className="mb-3 relative w-28 h-28 rounded overflow-hidden border border-white/20">
+                        <img
+                            src={previewImage}
+                            alt="preview"
+                            className="w-full h-full object-cover rounded opacity-100"
+                        />
+                        {imageUploading && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        )}
+                        <button
+                            onClick={() => !imageUploading && setPreviewImage(null)}
+                            className="absolute top-1 right-1 z-10 flex items-center justify-center w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-red-400"
+                            aria-label="Close image"
+                            disabled={imageUploading}
+                        >
+                            <i className="ri-close-line text-sm" />
+                        </button>
+                    </div>
+                )}
 
                 <div className="flex items-center gap-3 sm:gap-3 relative sm:px-2">
-
                     <label className="text-white/70 hover:text-white cursor-pointer flex-shrink-0">
                         <i className="ri-image-add-line text-2xl sm:text-3xl"></i>
                         <input
@@ -649,4 +654,3 @@ const ChatContainer = ({ setIsMedia }) => {
 };
 
 export default ChatContainer;
-

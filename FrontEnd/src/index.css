@@ -11,14 +11,6 @@
     font-family: Outfit;
 }
 
-/* Ensure the parent takes full viewport height */
-html, body, #root {
-  height: 100%;
-}
-.sticky {
-  position: sticky;
-  will-change: transform;
-}
 
 .custom-scrollbar::-webkit-scrollbar {
   width: 8px;
